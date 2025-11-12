@@ -1,0 +1,45 @@
+{
+  "name": "plunder-academy-contracts",
+  "version": "1.0.0",
+  "description": "Plunder Academy smart contracts and API for training registry system",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev --env development",
+    "deploy": "wrangler deploy",
+    "deploy:dev": "wrangler deploy --env development",
+    "tail": "wrangler tail",
+    "cf-typegen": "wrangler types",
+    "db:create": "wrangler d1 create plunder-academy-db",
+    "db:create:dev": "wrangler d1 create plunder-academy-db-dev",
+    "db:local": "wrangler d1 execute plunder-academy-db --file=./migrations/001-initial.sql && wrangler d1 execute plunder-academy-db --file=./migrations/002-update-submissions.sql && wrangler d1 execute plunder-academy-db --file=./migrations/003-feedback-analytics.sql",
+    "db:local:dev": "wrangler d1 execute plunder-academy-db-dev --env development --file=./migrations/001-initial.sql && wrangler d1 execute plunder-academy-db-dev --env development --file=./migrations/002-update-submissions.sql && wrangler d1 execute plunder-academy-db-dev --env development --file=./migrations/003-feedback-analytics.sql",
+    "db:migrate": "wrangler d1 execute plunder-academy-db --remote --file=./migrations/001-initial.sql && wrangler d1 execute plunder-academy-db --remote --file=./migrations/002-update-submissions.sql && wrangler d1 execute plunder-academy-db --remote --file=./migrations/003-feedback-analytics.sql",
+    "db:migrate:dev": "wrangler d1 execute plunder-academy-db-dev --remote --file=./migrations/001-initial.sql && wrangler d1 execute plunder-academy-db-dev --remote --file=./migrations/002-update-submissions.sql && wrangler d1 execute plunder-academy-db-dev --remote --file=./migrations/003-feedback-analytics.sql",
+    "db:query": "wrangler d1 execute plunder-academy-db --remote --command",
+    "db:query:local": "wrangler d1 execute plunder-academy-db --command",
+    "contracts:build": "cd contracts && forge build",
+    "contracts:test": "cd contracts && forge test",
+    "contracts:deploy:testnet": "cd contracts && forge script script/Deploy.s.sol --rpc-url $RPC_URL_TESTNET --broadcast --legacy",
+    "upload:training": "node scripts/upload-training.js"
+  },
+  "keywords": [
+    "cloudflare-workers",
+    "smart-contracts",
+    "training",
+    "certificates",
+    "blockchain"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "ethers": "^6.13.2",
+    "hono": "^4.4.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240529.0",
+    "@aws-sdk/client-s3": "^3.651.1",
+    "dotenv": "^16.4.5",
+    "typescript": "^5.5.2",
+    "wrangler": "^4.32.0"
+  }
+}

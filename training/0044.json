@@ -1,0 +1,15 @@
+{
+  "name": "The Gothic Spire",
+  "description": "Ever-reaching, never collapsing.",
+  "image": "https://static.plunderswap.com/training/images/0044.webp",
+  "attributes": [
+    { "trait_type": "Achievement", "value": "The Gothic Spire" },
+    { "trait_type": "Module", "value": "Proxy Patterns & Upgradeability" },
+    { "trait_type": "Location", "value": "The Gothic Spire" },
+    { "trait_type": "Island", "value": "Gilded Bastion" },
+    { "trait_type": "Level", "value": 17 },
+    { "trait_type": "Type", "value": "Upgradeability" },
+    { "trait_type": "Rarity", "value": "Rare" }
+  ]
+}
+

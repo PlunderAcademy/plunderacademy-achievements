@@ -1,0 +1,14 @@
+{
+  "name": "The Mound of Morning",
+  "description": "The pyramid of light stands eternal — proof of mastery.",
+  "image": "https://static.plunderswap.com/training/images/0033.webp",
+  "attributes": [
+    { "trait_type": "Achievement", "value": "The Mound of Morning" },
+    { "trait_type": "Module", "value": "NFT Collection Practical" },
+    { "trait_type": "Location", "value": "The Mound of Morning" },
+    { "trait_type": "Island", "value": "Desert Bluff" },
+    { "trait_type": "Level", "value": 13 },
+    { "trait_type": "Type", "value": "NFT" },
+    { "trait_type": "Rarity", "value": "Epic" }
+  ]
+}

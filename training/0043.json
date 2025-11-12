@@ -1,0 +1,15 @@
+{
+  "name": "The Dome of The Rock",
+  "description": "Beyond a passing shadow.",
+  "image": "https://static.plunderswap.com/training/images/0043.webp",
+  "attributes": [
+    { "trait_type": "Achievement", "value": "The Dome of The Rock" },
+    { "trait_type": "Module", "value": "Random Number Generator Practical" },
+    { "trait_type": "Location", "value": "The Dome of The Rock" },
+    { "trait_type": "Island", "value": "Gilded Bastion" },
+    { "trait_type": "Level", "value": 16 },
+    { "trait_type": "Type", "value": "Randomness" },
+    { "trait_type": "Rarity", "value": "Epic" }
+  ]
+}
+

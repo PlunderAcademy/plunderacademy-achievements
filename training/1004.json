@@ -1,0 +1,15 @@
+{
+  "name": "Aetos Dios",
+  "description": "You found the aetos dios on the island!",
+  "image": "https://static.plunderswap.com/training/images/1004.webp",
+  "attributes": [
+    { "trait_type": "Achievement", "value": "Aetos Dios" },
+    { "trait_type": "Module", "value": "Secret Achievements" },
+    { "trait_type": "Location", "value": "Hidden" },
+    { "trait_type": "Island", "value": "Gilded Bastion" },
+    { "trait_type": "Level", "value": 4 },
+    { "trait_type": "Type", "value": "Secret" },
+    { "trait_type": "Rarity", "value": "Epic" }
+  ]
+}
+

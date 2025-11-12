@@ -1,0 +1,15 @@
+{
+  "name": "Golden Rams Head",
+  "description": "You found the golden rams head on the island!",
+  "image": "https://static.plunderswap.com/training/images/1003.webp",
+  "attributes": [
+    { "trait_type": "Achievement", "value": "Golden Rams Head" },
+    { "trait_type": "Module", "value": "Secret Achievements" },
+    { "trait_type": "Location", "value": "Hidden" },
+    { "trait_type": "Island", "value": "Desert Bluff" },
+    { "trait_type": "Level", "value": 3 },
+    { "trait_type": "Type", "value": "Secret" },
+    { "trait_type": "Rarity", "value": "Epic" }
+  ]
+}
+

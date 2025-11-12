@@ -1,0 +1,15 @@
+{
+  "name": "The Garden Ruins",
+  "description": "The Garden breathes again.",
+  "image": "https://static.plunderswap.com/training/images/0046.webp",
+  "attributes": [
+    { "trait_type": "Achievement", "value": "The Garden Ruins" },
+    { "trait_type": "Module", "value": "Upgradable Contract Practical" },
+    { "trait_type": "Location", "value": "The Garden Ruins" },
+    { "trait_type": "Island", "value": "Gilded Bastion" },
+    { "trait_type": "Level", "value": 19 },
+    { "trait_type": "Type", "value": "Upgradeability" },
+    { "trait_type": "Rarity", "value": "Epic" }
+  ]
+}
+

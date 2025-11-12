@@ -1,0 +1,104 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Cloudflare Workers
+dist/
+.wrangler/
+
+# TypeScript
+*.tsbuildinfo
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# Dependency directories
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env.test
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# next.js build output
+.next
+
+# nuxt.js build output
+.nuxt
+
+# vuepress build output
+.vuepress/dist
+
+# Serverless directories
+.serverless
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
+
+/contracts/broadcast/
+/contracts/cache/
+/contracts/out/
+/contracts-token-factory/broadcast/
+/contracts-token-factory/cache/
+/contracts-token-factory/out/
+
+.cursorindexingignore
+.specstory
+.specstory/**
+
+# Sensitive quiz and secret data (externalized for security)
+training/quiz-data.json
+training/secret-answers.json
+
+# Adobe After Effects
+*.aep
+**/*.aep Logs/
+**/*.aep Logs/**
+**/Adobe After Effects Auto-Save/
+**/Adobe After Effects Auto-Save/**

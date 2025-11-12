@@ -1,0 +1,14 @@
+{
+  "name": "The Crash Landing",
+  "description": "A fragment of the island's consciousness — proof that even in collapse, the architect endures.",
+  "image": "https://static.plunderswap.com/training/images/0021.webp",
+  "attributes": [
+    { "trait_type": "Achievement", "value": "The Crash Landing" },
+    { "trait_type": "Module", "value": "Advanced Solidity Foundations" },
+    { "trait_type": "Location", "value": "The Crash Landing" },
+    { "trait_type": "Island", "value": "Frost Peak" },
+    { "trait_type": "Level", "value": 6 },
+    { "trait_type": "Type", "value": "Advanced Solidity" },
+    { "trait_type": "Rarity", "value": "Rare" }
+  ]
+}

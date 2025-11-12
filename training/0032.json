@@ -1,0 +1,15 @@
+{
+  "name": "The Alcazaba Kasbah",
+  "description": "A fortress of encoded dreams, proof that art survives when its story is bound to the chain of memory.",
+  "image": "https://static.plunderswap.com/training/images/0032.webp",
+  "attributes": [
+    { "trait_type": "Achievement", "value": "The Alcazaba Kasbah" },
+    { "trait_type": "Module", "value": "Advanced NFT Features" },
+    { "trait_type": "Location", "value": "Alcazaba Kasbah" },
+    { "trait_type": "Island", "value": "Desert Bluff" },
+    { "trait_type": "Level", "value": 12 },
+    { "trait_type": "Type", "value": "NFT" },
+    { "trait_type": "Rarity", "value": "Rare" }
+  ]
+}
+

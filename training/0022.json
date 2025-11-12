@@ -1,0 +1,14 @@
+{
+  "name": "The Frostbitten Frontier",
+  "description": "A sigil of truth forged in light. Your code and your will now glow with proof.",
+  "image": "https://static.plunderswap.com/training/images/0022.webp",
+  "attributes": [
+    { "trait_type": "Achievement", "value": "The Frostbitten Frontier" },
+    { "trait_type": "Module", "value": "Advanced Data Structures & Error Handling" },
+    { "trait_type": "Location", "value": "Igloo City" },
+    { "trait_type": "Island", "value": "Frost Peak" },
+    { "trait_type": "Level", "value": 7 },
+    { "trait_type": "Type", "value": "Advanced Solidity" },
+    { "trait_type": "Rarity", "value": "Rare" }
+  ]
+}

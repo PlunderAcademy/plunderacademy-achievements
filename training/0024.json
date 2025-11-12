@@ -1,0 +1,15 @@
+{
+  "name": "The Shattered Divide",
+  "description": "You have learned the rhythm of the island. The pulse of patience. The logic of restraint.",
+  "image": "https://static.plunderswap.com/training/images/0024.webp",
+  "attributes": [
+    { "trait_type": "Achievement", "value": "The Shattered Divide" },
+    { "trait_type": "Module", "value": "Staking Concepts & Time-Based Logic" },
+    { "trait_type": "Location", "value": "The Shattered Divide" },
+    { "trait_type": "Island", "value": "Frost Peak" },
+    { "trait_type": "Level", "value": 9 },
+    { "trait_type": "Type", "value": "Staking" },
+    { "trait_type": "Rarity", "value": "Rare" }
+  ]
+}
+

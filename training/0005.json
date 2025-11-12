@@ -1,0 +1,14 @@
+{
+  "name": "The Gobekli Sun Disk",
+  "description": "Your lasting token creation shining bright in the blockchain network.",
+  "image": "https://static.plunderswap.com/training/images/0005.webp",
+  "attributes": [
+    { "trait_type": "Achievement", "value": "The Gobekli Sun Disk" },
+    { "trait_type": "Module", "value": "Creating ERC20 Tokens" },
+    { "trait_type": "Location", "value": "The Ancient Stone Circle" },
+    { "trait_type": "Island", "value": "Jungle Island" },
+    { "trait_type": "Level", "value": 5 },
+    { "trait_type": "Type", "value": "Creation" },
+    { "trait_type": "Rarity", "value": "Rare" }
+  ]
+}

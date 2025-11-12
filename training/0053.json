@@ -1,0 +1,14 @@
+{
+  "name": "The Flying Dutchman",
+  "description": "A seamless bridge between worlds — where code meets user, and vision becomes reality.",
+  "image": "https://static.plunderswap.com/training/images/0053.webp",
+  "attributes": [
+    { "trait_type": "Achievement", "value": "The Flying Dutchman" },
+    { "trait_type": "Module", "value": "DApp Interface Practical" },
+    { "trait_type": "Location", "value": "The Interface Tower" },
+    { "trait_type": "Island", "value": "Neon Haven" },
+    { "trait_type": "Level", "value": 22 },
+    { "trait_type": "Type", "value": "Frontend" },
+    { "trait_type": "Rarity", "value": "Epic" }
+  ]
+}

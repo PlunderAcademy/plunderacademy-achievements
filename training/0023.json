@@ -1,0 +1,15 @@
+{
+  "name": "The Crystal Mountain",
+  "description": "The mountain remembers you — a token of those who have learned restraint in the storm.",
+  "image": "https://static.plunderswap.com/training/images/0023.webp",
+  "attributes": [
+    { "trait_type": "Achievement", "value": "The Crystal Mountain" },
+    { "trait_type": "Module", "value": "Testing Fundamentals" },
+    { "trait_type": "Location", "value": "The Frozen Mountain" },
+    { "trait_type": "Island", "value": "Frost Peak" },
+    { "trait_type": "Level", "value": 8 },
+    { "trait_type": "Type", "value": "Testing" },
+    { "trait_type": "Rarity", "value": "Rare" }
+  ]
+}
+

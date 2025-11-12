@@ -1,0 +1,14 @@
+{
+  "name": "The Bring 'Em Closer",
+  "description": "A finely-crafted telescope for seeing hidden blockchain development paths clearly.",
+  "image": "https://static.plunderswap.com/training/images/0002.webp",
+  "attributes": [
+    { "trait_type": "Achievement", "value": "The Bring 'Em Closer" },
+    { "trait_type": "Module", "value": "EVM Fundamentals" },
+    { "trait_type": "Location", "value": "The Jungle Village" },
+    { "trait_type": "Island", "value": "Jungle Island" },
+    { "trait_type": "Level", "value": 2 },
+    { "trait_type": "Type", "value": "Technical" },
+    { "trait_type": "Rarity", "value": "Common" }
+  ]
+}

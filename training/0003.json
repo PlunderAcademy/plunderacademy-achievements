@@ -1,0 +1,14 @@
+{
+  "name": "The Molten Mountain",
+  "description": "Symbol of Solidity mastery forged in the heart of volcanic fire.",
+  "image": "https://static.plunderswap.com/training/images/0003.webp",
+  "attributes": [
+    { "trait_type": "Achievement", "value": "The Molten Mountain" },
+    { "trait_type": "Module", "value": "Solidity Fundamentals" },
+    { "trait_type": "Location", "value": "The Volcanic Fortress" },
+    { "trait_type": "Island", "value": "Jungle Island" },
+    { "trait_type": "Level", "value": 3 },
+    { "trait_type": "Type", "value": "Programming" },
+    { "trait_type": "Rarity", "value": "Uncommon" }
+  ]
+}

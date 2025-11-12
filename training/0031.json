@@ -1,0 +1,15 @@
+{
+  "name": "The Siwa Sanctuary",
+  "description": "A pool of reflection within the desert's heart, proof that under burning skies, individuality endures.",
+  "image": "https://static.plunderswap.com/training/images/0031.webp",
+  "attributes": [
+    { "trait_type": "Achievement", "value": "The Siwa Sanctuary" },
+    { "trait_type": "Module", "value": "ERC721 Standards & Implementation" },
+    { "trait_type": "Location", "value": "Siwa Sanctuary" },
+    { "trait_type": "Island", "value": "Desert Bluff" },
+    { "trait_type": "Level", "value": 11 },
+    { "trait_type": "Type", "value": "NFT" },
+    { "trait_type": "Rarity", "value": "Rare" }
+  ]
+}
+

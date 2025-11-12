@@ -1,0 +1,15 @@
+{
+  "name": "The Old Shambles",
+  "description": "Where chaos once reigned, your logic brings order through oracles and patterns of fairness.",
+  "image": "https://static.plunderswap.com/training/images/0042.webp",
+  "attributes": [
+    { "trait_type": "Achievement", "value": "The Old Shambles" },
+    { "trait_type": "Module", "value": "Oracles, Randomness & Airdrop Patterns" },
+    { "trait_type": "Location", "value": "The Old Shambles" },
+    { "trait_type": "Island", "value": "Gilded Bastion" },
+    { "trait_type": "Level", "value": 15 },
+    { "trait_type": "Type", "value": "Oracles" },
+    { "trait_type": "Rarity", "value": "Rare" }
+  ]
+}
+

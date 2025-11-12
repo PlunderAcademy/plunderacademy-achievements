@@ -1,0 +1,15 @@
+{
+  "name": "The Watchers Gate",
+  "description": "You have crossed the threshold of flow — guardian of balance.",
+  "image": "https://static.plunderswap.com/training/images/0041.webp",
+  "attributes": [
+    { "trait_type": "Achievement", "value": "The Watchers Gate" },
+    { "trait_type": "Module", "value": "DeFi Fundamentals & Simple Swaps" },
+    { "trait_type": "Location", "value": "The Watchers Gate" },
+    { "trait_type": "Island", "value": "Gilded Bastion" },
+    { "trait_type": "Level", "value": 14 },
+    { "trait_type": "Type", "value": "DeFi" },
+    { "trait_type": "Rarity", "value": "Rare" }
+  ]
+}
+
