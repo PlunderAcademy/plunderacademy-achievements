@@ -17,12 +17,14 @@ database_id = "8d592fe6-a917-46da-b509-9dca74ea028f"
 # Environment variables
 [vars]
 ENVIRONMENT = "production"
-RPC_URL = "https://api.zilliqa.com"
+RPC_URL = "https://api.zilliqa.com"  # Default/fallback RPC
+RPC_URL_MAINNET = "https://api.zilliqa.com"
+RPC_URL_TESTNET = "https://api.testnet.zilliqa.com"
 
 # For development
 [env.development]
 name = "plunder-academy-api-dev"
-vars = { ENVIRONMENT = "development", RPC_URL = "https://api.testnet.zilliqa.com" }
+vars = { ENVIRONMENT = "development", RPC_URL = "https://api.testnet.zilliqa.com", RPC_URL_MAINNET = "https://api.zilliqa.com", RPC_URL_TESTNET = "https://api.testnet.zilliqa.com" }
 
 [[env.development.d1_databases]]
 binding = "DB"

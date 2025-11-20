@@ -75,7 +75,7 @@ plunder-academy-contracts/
 Set these environment variables (Linux/macOS syntax [[memory:5848151]]):
 
 ```bash
-# Blockchain RPC URLs
+# Blockchain RPC URLs (for contract deployment scripts)
 export RPC_URL_MAINNET="https://api.zilliqa.com"
 export RPC_URL_TESTNET="https://api.testnet.zilliqa.com"
 
@@ -97,8 +97,10 @@ export QUIZ_DATA_URL="https://your-domain.com/private/quiz-data.json"
 export SECRET_ANSWERS_URL="https://your-domain.com/private/secret-answers.json"
 
 # API configuration
-export CHAIN_ID="33101"                 # Zilliqa testnet
+export CHAIN_ID="33101"                 # Zilliqa testnet (for claiming achievements)
 ```
+
+**Note:** The API RPC URLs are configured in `wrangler.toml` (see below), not as shell environment variables.
 
 ### Externalizing Quiz Data and Secret Answers
 
@@ -290,6 +292,16 @@ All migrations are automatically applied when running `npm run db:migrate`
    database_id = "your-dev-database-id"  # From npm run db:create:dev
    ```
 
+   **RPC URLs Configuration:**  
+   The API needs access to **both** mainnet and testnet RPCs simultaneously to route transaction validations based on the submitted chainId. These are configured in `wrangler.toml`:
+   ```toml
+   [vars]
+   RPC_URL = "https://api.zilliqa.com"              # Default/fallback
+   RPC_URL_MAINNET = "https://api.zilliqa.com"      # For chainId 32769
+   RPC_URL_TESTNET = "https://api.testnet.zilliqa.com"  # For chainId 33101
+   ```
+   These are already set correctly in `wrangler.toml` - no changes needed unless using custom RPC endpoints.
+
 3. Set secrets for production:
    ```bash
    wrangler secret put ISSUER_PRIVATE_KEY
@@ -312,7 +324,7 @@ All migrations are automatically applied when running `npm run db:migrate`
    wrangler secret put SECRET_ANSWERS_URL --env development
    ```
 
-**Note:** `RPC_URL` is configured in `wrangler.toml` for each environment.
+**Note:** RPC URLs (`RPC_URL`, `RPC_URL_MAINNET`, `RPC_URL_TESTNET`) are configured in `wrangler.toml`, not as secrets.
 
 ## 📦 R2 Training Assets Upload
 

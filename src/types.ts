@@ -229,8 +229,9 @@ export type Bindings = {
   ISSUER_PRIVATE_KEY: string;
   CONTRACT_ADDRESS: string;
   CHAIN_ID: string;
-  RPC_URL: string;
-  RPC_URL_TESTNET?: string;
+  RPC_URL: string;  // Default/fallback RPC URL
+  RPC_URL_MAINNET?: string;  // Mainnet RPC (chainId 32769)
+  RPC_URL_TESTNET?: string;  // Testnet RPC (chainId 33101)
   NEXT_PUBLIC_FACTORY_ADDRESS_TESTNET?: string;
   NEXT_PUBLIC_FACTORY_ADDRESS_MAINNET?: string;
   QUIZ_DATA_URL?: string;

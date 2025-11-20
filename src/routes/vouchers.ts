@@ -1620,10 +1620,28 @@ voucherRoutes.post('/submit', rateLimit, async (c) => {
     }
 
     // Validate the submission using type-specific validation
-    // Use testnet RPC for transaction validations, mainnet for others
-    const rpcUrl = submissionType === 'transaction' 
-      ? (c.env.RPC_URL_TESTNET || c.env.RPC_URL)
-      : c.env.RPC_URL;
+    // Determine RPC URL based on chainId from submission data
+    let rpcUrl = c.env.RPC_URL_MAINNET || c.env.RPC_URL; // Default to mainnet
+    
+    if (submissionType === 'transaction' || submissionType === 'contract') {
+      const submittedChainId = (submissionData as any).chainId;
+      
+      // Use the appropriate RPC based on submitted chainId
+      if (submittedChainId === 33101) {
+        // Testnet
+        rpcUrl = c.env.RPC_URL_TESTNET || c.env.RPC_URL;
+      } else if (submittedChainId === 32769) {
+        // Mainnet
+        rpcUrl = c.env.RPC_URL_MAINNET || c.env.RPC_URL;
+      } else if (submittedChainId) {
+        // If a chainId was provided but we don't recognize it
+        console.warn(`Unknown chainId ${submittedChainId}, defaulting to testnet RPC`);
+        rpcUrl = c.env.RPC_URL_TESTNET || c.env.RPC_URL;
+      } else {
+        // No chainId provided, default to testnet for backward compatibility
+        rpcUrl = c.env.RPC_URL_TESTNET || c.env.RPC_URL;
+      }
+    }
     
     const validationContext: ValidationContext = {
       achievementNumber,
@@ -1675,12 +1693,22 @@ voucherRoutes.post('/submit', rateLimit, async (c) => {
       metadata: metadata ? JSON.stringify(metadata) : undefined,
     });
 
+    // Determine which chainId to return based on submission type
+    let responseChainId = parseInt(c.env.CHAIN_ID); // Default to mainnet for claiming
+    if (submissionType === 'transaction' || submissionType === 'contract') {
+      // For transaction/contract submissions, return the chainId they submitted to
+      const submittedChainId = (submissionData as any).chainId;
+      if (submittedChainId) {
+        responseChainId = submittedChainId;
+      }
+    }
+
     const response: VoucherResponse = {
       success: validationResult.passed,
       voucher,
       signature,
       contractAddress: c.env.CONTRACT_ADDRESS,
-      chainId: parseInt(c.env.CHAIN_ID),
+      chainId: responseChainId,
       results: validationResult,
       error: validationResult.passed ? undefined : validationResult.error
     };
