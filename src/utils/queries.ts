@@ -251,11 +251,14 @@ export class AnalyticsQueries {
     const platformStats = await this.db
       .prepare(`
         SELECT 
-          COUNT(DISTINCT ai.wallet_address) as total_users,
+          COUNT(DISTINCT tc.wallet_address) as total_users,
           COUNT(ai.id) as total_interactions,
           AVG(ai.duration_ms) as avg_duration
-        FROM ai_interactions ai
-        WHERE ai.created_at >= ${cutoffDate}
+        FROM training_completions tc
+        LEFT JOIN ai_interactions ai ON tc.wallet_address = ai.wallet_address 
+          AND ai.created_at >= ${cutoffDate}
+        WHERE tc.passed = 1
+          AND tc.created_at >= ${cutoffDate}
       `)
       .first<{
         total_users: number;
@@ -272,12 +275,14 @@ export class AnalyticsQueries {
       `)
       .first<{ total_feedback: number }>();
 
-    // Total modules completed
+    // Total modules completed (non-secret achievements only)
     const moduleCount = await this.db
       .prepare(`
         SELECT COUNT(*) as total_modules
-        FROM module_feedback
-        WHERE created_at >= ${cutoffDate}
+        FROM training_completions
+        WHERE passed = 1
+          AND submission_type != 'secret'
+          AND created_at >= ${cutoffDate}
       `)
       .first<{ total_modules: number }>();
 
@@ -300,13 +305,26 @@ export class AnalyticsQueries {
         unique_users: number;
       }>();
 
-    // Feedback summary by tool
+    // Feedback summary by tool - encompass all rating and star data
+    // Convert star ratings to proportional positive/negative (e.g., 4 stars = 80% positive, 20% negative)
     const feedbackByTool = await this.db
       .prepare(`
         SELECT 
           af.tool_type,
-          COUNT(CASE WHEN af.feedback_type = 'thumbs_up' THEN 1 END) as positive,
-          COUNT(CASE WHEN af.feedback_type = 'thumbs_down' THEN 1 END) as negative,
+          SUM(
+            CASE 
+              WHEN af.feedback_type = 'thumbs_up' THEN 1
+              WHEN af.response_quality_rating IS NOT NULL THEN af.response_quality_rating / 5.0
+              ELSE 0
+            END
+          ) as positive,
+          SUM(
+            CASE 
+              WHEN af.feedback_type = 'thumbs_down' THEN 1
+              WHEN af.response_quality_rating IS NOT NULL THEN (5 - af.response_quality_rating) / 5.0
+              ELSE 0
+            END
+          ) as negative,
           AVG(af.response_quality_rating) as avg_rating
         FROM ai_feedback af
         WHERE af.created_at >= ${cutoffDate}
