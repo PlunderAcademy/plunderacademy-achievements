@@ -247,24 +247,36 @@ export class AnalyticsQueries {
     // If timeframeDays is null, means "all time" - no date restriction
     const cutoffDate = timeframeDays === null ? `datetime('1970-01-01')` : `datetime('now', '-${timeframeDays} days')`;
 
-    // Platform overview stats
-    const platformStats = await this.db
+    // Platform overview stats - total users from training completions
+    const totalUsersResult = await this.db
+      .prepare(`
+        SELECT COUNT(DISTINCT wallet_address) as total_users
+        FROM training_completions
+        WHERE passed = 1
+          AND created_at >= ${cutoffDate}
+      `)
+      .first<{ total_users: number }>();
+
+    // AI interactions stats (keep as original)
+    const aiStats = await this.db
       .prepare(`
         SELECT 
-          COUNT(DISTINCT tc.wallet_address) as total_users,
-          COUNT(ai.id) as total_interactions,
-          AVG(ai.duration_ms) as avg_duration
-        FROM training_completions tc
-        LEFT JOIN ai_interactions ai ON tc.wallet_address = ai.wallet_address 
-          AND ai.created_at >= ${cutoffDate}
-        WHERE tc.passed = 1
-          AND tc.created_at >= ${cutoffDate}
+          COUNT(id) as total_interactions,
+          AVG(duration_ms) as avg_duration
+        FROM ai_interactions
+        WHERE created_at >= ${cutoffDate}
       `)
       .first<{
-        total_users: number;
         total_interactions: number;
         avg_duration: number;
       }>();
+
+    // Combine stats for compatibility
+    const platformStats = {
+      total_users: totalUsersResult?.total_users || 0,
+      total_interactions: aiStats?.total_interactions || 0,
+      avg_duration: aiStats?.avg_duration || 0,
+    };
 
     // Total feedback submissions
     const feedbackCount = await this.db
