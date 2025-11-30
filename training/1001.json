@@ -1,7 +1,7 @@
 {
   "name": "Murphy's Fortune",
   "description": "You found the hidden treasure on the island!",
-  "image": "https://static.plunderswap.com/training/images/0001.webp",
+  "image": "https://static.plunderswap.com/training/images/1001.webp",
   "attributes": [
     { "trait_type": "Achievement", "value": "Murphy's Fortune" },
     { "trait_type": "Module", "value": "Secret Achievements" },
