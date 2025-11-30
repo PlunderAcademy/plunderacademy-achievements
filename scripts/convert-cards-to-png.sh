@@ -9,6 +9,7 @@
 # Usage:
 #   ./convert-cards-to-png.sh              # Convert all cards
 #   ./convert-cards-to-png.sh 0054.webp    # Convert specific card only
+#   ./convert-cards-to-png.sh --hollow 0040-background.webp  # Hollow out center of background
 
 # Configuration
 IMAGE_DIR="./training/images"
@@ -16,9 +17,28 @@ IMAGE_DIR="./training/images"
 # Twitter optimal: 800-1200px wide is good for most posts
 # Set to empty string to skip resizing
 RESIZE_WIDTH="800"
+# Background images (frames) - slightly larger to wrap around cards
+BACKGROUND_RESIZE_WIDTH="800"
+# Border thickness for hollowing out background images (in pixels at original size)
+# This creates a transparent center, keeping only the border
+BORDER_THICKNESS="100"
 
 # Parse command line arguments
-SPECIFIC_FILE="$1"
+HOLLOW_CENTER=false
+SPECIFIC_FILE=""
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --hollow|-h)
+            HOLLOW_CENTER=true
+            shift
+            ;;
+        *)
+            SPECIFIC_FILE="$1"
+            shift
+            ;;
+    esac
+done
 
 # Check if ImageMagick is installed
 if ! command -v convert &> /dev/null; then
@@ -54,7 +74,15 @@ cd "$IMAGE_DIR" || exit 1
 echo "Converting WebP cards to PNG format..."
 echo "Directory: $(pwd)"
 if [ -n "$RESIZE_WIDTH" ]; then
-    echo "Resizing images to: ${RESIZE_WIDTH}px width (maintaining aspect ratio)"
+    echo "Resizing regular images to: ${RESIZE_WIDTH}px width"
+fi
+if [ -n "$BACKGROUND_RESIZE_WIDTH" ]; then
+    echo "Resizing background images to: ${BACKGROUND_RESIZE_WIDTH}px width"
+else
+    echo "Background images: keeping original size"
+fi
+if [ "$HOLLOW_CENTER" = true ]; then
+    echo "Hollow mode: will clear center of background images (border: ${BORDER_THICKNESS}px)"
 fi
 echo ""
 
@@ -69,9 +97,9 @@ if [ -n "$SPECIFIC_FILE" ]; then
         exit 1
     fi
     
-    # Check if it's a valid card file (4 digits + .webp)
-    if ! echo "$SPECIFIC_FILE" | grep -qE '^[0-9]{4}\.webp$'; then
-        echo "Error: File must match pattern xxxx.webp (e.g., 0001.webp, 0054.webp)"
+    # Check if it's a .webp file
+    if ! echo "$SPECIFIC_FILE" | grep -qE '\.webp$'; then
+        echo "Error: File must be a .webp file"
         echo "Got: $SPECIFIC_FILE"
         exit 1
     fi
@@ -81,11 +109,46 @@ if [ -n "$SPECIFIC_FILE" ]; then
     echo "Processing single file: $SPECIFIC_FILE"
     echo ""
 else
-    # Process all matching files
+    # Process all matching files (only main card files, not variants)
     FILES_TO_PROCESS=([0-9][0-9][0-9][0-9].webp)
-    echo "Processing all card files"
+    echo "Processing all card files (variants excluded)"
     echo ""
 fi
+
+# Function to hollow out the center of an image (for background/frame images)
+hollow_center() {
+    local img="$1"
+    local border="$2"
+    
+    # Get image dimensions
+    local dims=$(identify -format "%wx%h" "$img")
+    local width=$(echo "$dims" | cut -d'x' -f1)
+    local height=$(echo "$dims" | cut -d'x' -f2)
+    
+    # Calculate inner rectangle (the part to make transparent)
+    local inner_x=$border
+    local inner_y=$border
+    local inner_w=$((width - 2 * border))
+    local inner_h=$((height - 2 * border))
+    
+    # Make sure inner dimensions are positive
+    if [ $inner_w -le 0 ] || [ $inner_h -le 0 ]; then
+        echo "  ⚠️  Image too small to hollow (border would exceed image)"
+        return 1
+    fi
+    
+    # Create a transparent center using region selection (more reliable)
+    # -alpha set ensures alpha channel exists
+    # -region selects the inner area, -alpha transparent makes it transparent
+    convert "$img" \
+        -alpha set \
+        -region "${inner_w}x${inner_h}+${inner_x}+${inner_y}" \
+        -alpha transparent \
+        +region \
+        "${img}.tmp" && mv "${img}.tmp" "$img"
+    
+    echo "  Hollowed center (keeping ${border}px border, cleared ${inner_w}x${inner_h} area)"
+}
 
 # Loop through files to process
 for file in "${FILES_TO_PROCESS[@]}"; do
@@ -98,19 +161,42 @@ for file in "${FILES_TO_PROCESS[@]}"; do
     # Get the output filename
     output="${file%.webp}.png"
     
+    # Check if this is a background image
+    is_background=false
+    if echo "$file" | grep -qE '\-background\.webp$'; then
+        is_background=true
+    fi
+    
     # Convert the file (with optional resizing)
     echo "Converting: $file -> $output"
     
-    if [ -n "$RESIZE_WIDTH" ]; then
+    # Determine resize width based on image type
+    if [ "$is_background" = true ]; then
+        current_resize="$BACKGROUND_RESIZE_WIDTH"
+        if [ -n "$current_resize" ]; then
+            echo "  (background image - resizing to ${current_resize}px)"
+        else
+            echo "  (background image - keeping original size)"
+        fi
+    else
+        current_resize="$RESIZE_WIDTH"
+    fi
+    
+    if [ -n "$current_resize" ]; then
         # Resize while maintaining aspect ratio
         # -resize WIDTHx means: scale to WIDTH pixels wide, height auto
         # -quality 95 for high quality
-        convert "$file" -resize "${RESIZE_WIDTH}x" -quality 95 "$output"
+        convert "$file" -resize "${current_resize}x" -quality 95 "$output"
     else
         convert "$file" "$output"
     fi
     
     if [ $? -eq 0 ]; then
+        # Hollow out center if requested and this is a background image
+        if [ "$HOLLOW_CENTER" = true ] && [ "$is_background" = true ]; then
+            hollow_center "$output" "$BORDER_THICKNESS"
+        fi
+        
         # Get size before compression
         size_before=$(stat -f%z "$output" 2>/dev/null || stat -c%s "$output" 2>/dev/null)
         
@@ -127,9 +213,15 @@ for file in "${FILES_TO_PROCESS[@]}"; do
                 if pngquant --quality=50-80 --force --ext .png "$output" 2>/dev/null; then
                     echo "  Compressed with pngquant (50-80 quality)"
                 else
-                    echo "  ⚠️  pngquant unable to compress, using ImageMagick fallback"
-                    # Fallback: use ImageMagick to reduce colors and quality slightly
-                    convert "$output" -colors 256 -quality 85 "${output}.tmp" && mv "${output}.tmp" "$output"
+                    # Final fallback: force pngquant with no quality floor (always succeeds)
+                    echo "  Second pass failed, forcing compression..."
+                    if pngquant 256 --force --ext .png "$output" 2>/dev/null; then
+                        echo "  Compressed with pngquant (forced 256 colors)"
+                    else
+                        echo "  ⚠️  pngquant failed, using ImageMagick fallback"
+                        # Aggressive fallback: reduce colors with dithering
+                        convert "$output" -dither FloydSteinberg -colors 256 -depth 8 PNG8:"${output}.tmp" && mv "${output}.tmp" "$output"
+                    fi
                 fi
             fi
         elif [ "$COMPRESSOR" = "optipng" ]; then
@@ -159,4 +251,3 @@ done
 echo ""
 echo "✓ Conversion complete! Converted $count files."
 echo "PNG files saved in: $IMAGE_DIR"
-
