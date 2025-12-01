@@ -171,7 +171,13 @@ const ACHIEVEMENT_TYPES: Record<string, "quiz" | "transaction" | "contract" | "c
   '1003': 'secret',  // secret achievement - first secret
   '1004': 'secret',  // secret achievement - first secret
   '1005': 'secret',  // secret achievement - first secret
-  '1101': 'secret'  // launch event achievement - this will be removed a day after the launch event
+  '1006': 'secret',  // secret achievement - first secret
+  '1101': 'secret',  // launch event achievement - this will be removed a day after the launch event
+  '2001': 'secret',  // secret achievement - first secret
+  '2002': 'secret',  // secret achievement - first secret
+  '2003': 'secret',  // secret achievement - first secret
+  '2004': 'secret',  // secret achievement - first secret
+  '2005': 'secret',  // secret achievement - first secret
 };
 
 // Interactive element grading functions
@@ -317,7 +323,7 @@ function gradeDragDropPuzzle(userAnswer: string, correctAnswer: any, points: num
 /**
  * Validates secret submissions by checking the secret answer
  */
-async function validateSecretSubmission(submissionData: SecretSubmission, context: ValidationContext, env?: Bindings): Promise<ValidationResult> {
+async function validateSecretSubmission(submissionData: SecretSubmission, context: ValidationContext, env?: Bindings, db?: DatabaseService): Promise<ValidationResult> {
   // Load secret answers if needed
   if (env) {
     await loadSecretAnswers(env);
@@ -331,6 +337,76 @@ async function validateSecretSubmission(submissionData: SecretSubmission, contex
       error: 'Secret answer not configured for this achievement',
       retryAllowed: false
     };
+  }
+
+  // Special validation for achievement 1006 (Plunder Master)
+  // Requires wallet to have completed ALL other achievements
+  if (context.achievementNumber === '1006') {
+    if (!db || !env) {
+      return {
+        passed: false,
+        error: 'Unable to verify achievement requirements',
+        retryAllowed: true
+      };
+    }
+
+    try {
+      // Get all achievement numbers except 1006 and other secret achievements that aren't required
+      const requiredAchievements = Object.keys(ACHIEVEMENT_TYPES).filter(
+        achievementNumber => 
+          achievementNumber !== '1006' && // Exclude self
+          achievementNumber !== '1101' // Exclude launch event (time-limited)
+      );
+
+      // Get wallet's completions from database (vouchers earned)
+      // This is the primary source of truth - if they have a voucher, they passed the achievement
+      const completions = await db.getWalletCompletions(context.walletAddress);
+      const completedSet = new Set(completions.filter(c => c.passed).map(c => c.achievement_number));
+
+      // Try to get claimed achievements from contract as supplementary check
+      // Use the mainnet RPC since that's where achievements are claimed
+      let claimedSet = new Set<string>();
+      try {
+        const contractRpcUrl = env.RPC_URL;
+        const contractReader = new ContractReader(env.CONTRACT_ADDRESS, contractRpcUrl);
+        const claimedAchievements = await contractReader.getWalletAchievementDetails(context.walletAddress);
+        claimedSet = new Set(claimedAchievements.map(a => a.achievementNumber));
+      } catch (contractError) {
+        // Contract read failed - this is OK, we'll rely on database completions
+        // This can happen if wallet has no on-chain achievements yet
+        console.warn('Could not read claimed achievements from contract (wallet may have none claimed yet):', contractError);
+      }
+
+      // Check which required achievements are missing
+      // An achievement is considered complete if they have a voucher OR have claimed it on-chain
+      const missingAchievements = requiredAchievements.filter(
+        achievementNumber => !completedSet.has(achievementNumber) && !claimedSet.has(achievementNumber)
+      );
+
+      if (missingAchievements.length > 0) {
+        return {
+          passed: false,
+          error: `You must complete all achievements before claiming Plunder Master. Missing: ${missingAchievements.length} achievement(s)`,
+          feedback: `Progress: ${requiredAchievements.length - missingAchievements.length}/${requiredAchievements.length} achievements completed`,
+          nextSteps: [
+            'Complete all training modules and achievements',
+            `Missing achievements: ${missingAchievements.slice(0, 5).join(', ')}${missingAchievements.length > 5 ? ` and ${missingAchievements.length - 5} more` : ''}`,
+            'Return here once you have completed all achievements'
+          ],
+          retryAllowed: false
+        };
+      }
+
+      // If we get here, wallet has all required achievements
+      // Continue with normal secret answer validation below
+    } catch (error) {
+      console.error('Error validating Plunder Master requirements:', error);
+      return {
+        passed: false,
+        error: 'Failed to verify achievement requirements. Please try again.',
+        retryAllowed: true
+      };
+    }
   }
 
   // Check time restriction for achievement 1101 (launch day)
@@ -364,7 +440,9 @@ async function validateSecretSubmission(submissionData: SecretSubmission, contex
   return {
     passed,
     feedback: passed 
-      ? 'Congratulations! You discovered the secret and unlocked this special achievement!'
+      ? (context.achievementNumber === '1006' 
+          ? 'Congratulations! You have achieved the ultimate rank of Plunder Master! You have conquered all challenges across the seven seas!' 
+          : 'Congratulations! You discovered the secret and unlocked this special achievement!')
       : 'The secret answer is incorrect. Keep exploring to find the right answer.',
     nextSteps: passed 
       ? ['Claim your voucher to receive the special achievement NFT']
@@ -1492,7 +1570,7 @@ async function verifyUpgradeableContract(
 /**
  * Routes to the appropriate validation function based on submission type
  */
-async function validateSubmission(context: ValidationContext, env?: Bindings): Promise<ValidationResult> {
+async function validateSubmission(context: ValidationContext, env?: Bindings, db?: DatabaseService): Promise<ValidationResult> {
   switch (context.submissionType) {
     case 'quiz':
       return validateQuizSubmission(context.submissionData as QuizSubmission, context, env);
@@ -1501,7 +1579,7 @@ async function validateSubmission(context: ValidationContext, env?: Bindings): P
       return validateTransactionSubmission(context.submissionData as TransactionSubmission, context, env);
       
     case 'secret':
-      return validateSecretSubmission(context.submissionData as SecretSubmission, context, env);
+      return validateSecretSubmission(context.submissionData as SecretSubmission, context, env, db);
     
     case 'contract':
       // Achievement 0046: Upgradeable Contract (Proxy Pattern)
@@ -1652,7 +1730,7 @@ voucherRoutes.post('/submit', rateLimit, async (c) => {
       metadata
     };
     
-    const validationResult = await validateSubmission(validationContext, c.env);
+    const validationResult = await validateSubmission(validationContext, c.env, db);
     
     // Always store the attempt in the database for tracking
     await db.createWalletData(normalizedWallet);

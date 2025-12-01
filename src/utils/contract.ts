@@ -53,8 +53,17 @@ export class ContractReader {
   async getWalletAchievements(walletAddress: string): Promise<number[]> {
     try {
       const achievements = await this.contract.getWalletAchievements(walletAddress);
+      // Handle case where contract returns empty or null
+      if (!achievements || achievements.length === 0) {
+        return [];
+      }
       return achievements.map((tokenId: bigint) => Number(tokenId));
-    } catch (error) {
+    } catch (error: any) {
+      // Handle BAD_DATA error - this often means wallet has no achievements or contract doesn't exist
+      if (error?.code === 'BAD_DATA' || error?.message?.includes('BAD_DATA')) {
+        console.warn('Contract returned empty data for wallet achievements - wallet may have no achievements yet');
+        return [];
+      }
       console.error('Error getting wallet achievements from contract:', error);
       throw new Error('Failed to read achievements from contract');
     }
