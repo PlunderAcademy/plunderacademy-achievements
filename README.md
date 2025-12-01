@@ -571,6 +571,45 @@ Submit module completion feedback survey.
 }
 ```
 
+#### `POST /api/v1/feedback/general`
+
+Submit general platform feedback (bugs, feature requests, UI issues, etc.).
+
+**Request:**
+```json
+{
+  "walletAddress": "0x...",
+  "category": "feature-request",
+  "feedback": "It would be great to have dark mode support!",
+  "title": "Add dark mode",
+  "rating": 4,
+  "pageUrl": "/dashboard",
+  "metadata": {
+    "browser": "Chrome",
+    "screenSize": "1920x1080"
+  }
+}
+```
+
+**Required fields:**
+- `walletAddress`: User's wallet address
+- `category`: One of `bug`, `feature-request`, `ui`, `content`, `other`
+- `feedback`: Main feedback text (max 5000 characters)
+
+**Optional fields:**
+- `title`: Short summary (max 200 characters)
+- `rating`: Satisfaction rating 1-5
+- `pageUrl`: Page where feedback originated (max 500 characters)
+- `metadata`: Additional context as key-value pairs
+
+**Response:**
+```json
+{
+  "success": true,
+  "feedbackId": 123
+}
+```
+
 #### `GET /api/v1/analytics/user/:walletAddress`
 
 Get user-specific analytics (AI usage, feedback, module progress).

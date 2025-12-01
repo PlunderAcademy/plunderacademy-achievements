@@ -1,7 +1,8 @@
 import type { 
   AIInteractionRequest, 
   AIFeedbackRequest, 
-  ModuleFeedbackRequest 
+  ModuleFeedbackRequest,
+  GeneralFeedbackRequest
 } from '../types';
 
 /**
@@ -218,6 +219,73 @@ export function validateModuleFeedbackRequest(data: any): { valid: boolean; erro
     valid: true, 
     data: sanitized as ModuleFeedbackRequest 
   };
+}
+
+/**
+ * Valid general feedback categories
+ */
+const GENERAL_FEEDBACK_CATEGORIES = ['bug', 'feature-request', 'ui', 'content', 'other'] as const;
+
+/**
+ * Validates general feedback request
+ */
+export function validateGeneralFeedbackRequest(data: any): { valid: boolean; error?: string; code?: string; data?: GeneralFeedbackRequest } {
+  if (!data || typeof data !== 'object') {
+    return { valid: false, error: 'Invalid request body' };
+  }
+
+  const { walletAddress, category, feedback, title, rating, pageUrl, metadata } = data;
+
+  // Required fields
+  if (!walletAddress || !isValidWalletAddress(walletAddress)) {
+    return { valid: false, error: 'Invalid wallet address format', code: 'INVALID_WALLET' };
+  }
+
+  if (!category || !GENERAL_FEEDBACK_CATEGORIES.includes(category)) {
+    return { 
+      valid: false, 
+      error: `Invalid category (must be one of: ${GENERAL_FEEDBACK_CATEGORIES.join(', ')})`, 
+      code: 'INVALID_CATEGORY' 
+    };
+  }
+
+  if (!feedback || typeof feedback !== 'string' || feedback.trim().length === 0) {
+    return { valid: false, error: 'Feedback text is required', code: 'MISSING_FEEDBACK' };
+  }
+
+  if (feedback.length > 5000) {
+    return { valid: false, error: 'Feedback text too long (max 5000 characters)', code: 'FEEDBACK_TOO_LONG' };
+  }
+
+  // Optional fields validation
+  if (title !== undefined && (typeof title !== 'string' || title.length > 200)) {
+    return { valid: false, error: 'Invalid title (max 200 characters)', code: 'INVALID_TITLE' };
+  }
+
+  if (rating !== undefined && !isValidRating(rating)) {
+    return { valid: false, error: 'Invalid rating (must be 1-5)', code: 'INVALID_RATING' };
+  }
+
+  if (pageUrl !== undefined && (typeof pageUrl !== 'string' || pageUrl.length > 500)) {
+    return { valid: false, error: 'Invalid page URL (max 500 characters)', code: 'INVALID_URL' };
+  }
+
+  if (metadata !== undefined && (typeof metadata !== 'object' || Array.isArray(metadata))) {
+    return { valid: false, error: 'Metadata must be an object', code: 'INVALID_METADATA' };
+  }
+
+  // Sanitize text fields
+  const sanitized: GeneralFeedbackRequest = {
+    walletAddress,
+    category,
+    feedback: sanitizeText(feedback, 5000)!,
+    title: title ? sanitizeText(title, 200) : undefined,
+    rating,
+    pageUrl: pageUrl ? sanitizeText(pageUrl, 500) : undefined,
+    metadata
+  };
+
+  return { valid: true, data: sanitized };
 }
 
 /**

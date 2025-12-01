@@ -1,9 +1,10 @@
 import { Hono } from 'hono';
-import type { Bindings, AIInteraction, AIFeedback, ModuleFeedback } from '../types';
+import type { Bindings, AIInteraction, AIFeedback, ModuleFeedback, GeneralFeedbackRequest } from '../types';
 import { 
   validateAIInteractionRequest,
   validateAIFeedbackRequest,
-  validateModuleFeedbackRequest
+  validateModuleFeedbackRequest,
+  validateGeneralFeedbackRequest
 } from '../utils/validation';
 import { AnalyticsQueries } from '../utils/queries';
 
@@ -186,6 +187,67 @@ feedbackRoutes.post('/module-completion', async (c) => {
       {
         success: false,
         error: 'Failed to store module feedback',
+        message: c.env.ENVIRONMENT === 'development' ? (error as Error).message : undefined,
+      },
+      500
+    );
+  }
+});
+
+/**
+ * POST /api/v1/feedback/general
+ * Submit general platform feedback (bugs, feature requests, UI feedback, etc.)
+ * Uses module_feedback table with module_slug pattern "general::{category}"
+ */
+feedbackRoutes.post('/general', async (c) => {
+  try {
+    const body = await c.req.json();
+    
+    // Validate request
+    const validation = validateGeneralFeedbackRequest(body);
+    if (!validation.valid) {
+      return c.json(
+        {
+          success: false,
+          error: validation.error,
+          code: validation.code,
+        },
+        400
+      );
+    }
+
+    const data = validation.data!;
+    const queries = new AnalyticsQueries(c.env.DB);
+
+    // Map general feedback to module_feedback table structure
+    // Using "general::{category}" as module_slug to distinguish from actual module feedback
+    const feedback: ModuleFeedback = {
+      wallet_address: data.walletAddress,
+      module_slug: `general::${data.category}`,
+      // Store title in what_worked_well (repurposed)
+      what_worked_well: data.title,
+      // Store main feedback in suggestions_for_improvement
+      suggestions_for_improvement: data.feedback,
+      // Store metadata (pageUrl + custom metadata) as JSON in additional_topics_wanted
+      additional_topics_wanted: data.pageUrl || data.metadata 
+        ? JSON.stringify({ pageUrl: data.pageUrl, ...data.metadata })
+        : undefined,
+      // Store rating in content_clarity (repurposed as satisfaction rating)
+      content_clarity: data.rating,
+    };
+
+    const feedbackId = await queries.createModuleFeedback(feedback);
+
+    return c.json({
+      success: true,
+      feedbackId,
+    });
+  } catch (error) {
+    console.error('Error storing general feedback:', error);
+    return c.json(
+      {
+        success: false,
+        error: 'Failed to store feedback',
         message: c.env.ENVIRONMENT === 'development' ? (error as Error).message : undefined,
       },
       500

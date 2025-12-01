@@ -110,6 +110,7 @@ export const RATE_LIMITS: Record<string, RateLimit> = {
   '/api/v1/feedback/ai-interaction': { windowMs: 3600000, maxRequests: 100 }, // 100 per hour
   '/api/v1/feedback/ai-response': { windowMs: 3600000, maxRequests: 100 }, // 100 per hour
   '/api/v1/feedback/module-completion': { windowMs: 3600000, maxRequests: 100 }, // 100 per hour
+  '/api/v1/feedback/general': { windowMs: 3600000, maxRequests: 50 }, // 50 per hour
 };
 
 // Submission validation
@@ -334,6 +335,16 @@ export interface ModuleFeedbackRequest {
   timeSpentMinutes?: number;
   externalResourcesUsed?: boolean;
   aiToolsHelpful?: boolean;
+}
+
+export interface GeneralFeedbackRequest {
+  walletAddress: string;
+  category: 'bug' | 'feature-request' | 'ui' | 'content' | 'other';
+  feedback: string;
+  title?: string;
+  rating?: number; // 1-5 satisfaction rating
+  pageUrl?: string;
+  metadata?: Record<string, string>;
 }
 
 export interface UserAnalyticsStats {
